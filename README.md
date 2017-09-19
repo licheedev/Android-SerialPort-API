@@ -20,7 +20,7 @@ allprojects {
 
 ```
 dependencies {
-        compile 'com.github.licheedev.Android-SerialPort-API:serialport:1.0'
+        compile 'com.github.licheedev.Android-SerialPort-API:serialport:1.0.1'
 }
 ```
 
