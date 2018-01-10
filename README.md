@@ -16,7 +16,7 @@ allprojects {
 }
 ```
 
-2. 添加依赖
+2. 子module添加依赖
 
 ```
 dependencies {
