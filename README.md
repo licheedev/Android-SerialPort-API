@@ -1,5 +1,4 @@
 # Android-SerialPort-API
-Google官方的Android串口通信Demo，修改成Android Studio项目
 
 用这个API写的一个小工具 https://github.com/licheedev/Android-SerialPort-Tool
 
