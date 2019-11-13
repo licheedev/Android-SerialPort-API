@@ -1,6 +1,7 @@
 # Android-SerialPort-API
 
 用这个API写的一个小工具 https://github.com/licheedev/Android-SerialPort-Tool
+
 基于这个API封装的库[SerialWroker](https://github.com/licheedev/SerialWorker)
 
 
