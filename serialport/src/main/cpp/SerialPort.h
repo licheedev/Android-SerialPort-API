@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     android_serialport_SerialPort
  * Method:    open
- * Signature: (Ljava/lang/String;II)Ljava/io/FileDescriptor;
+ * Signature: (Ljava/lang/String;IIIII)Ljava/io/FileDescriptor;
  */
 JNIEXPORT jobject JNICALL Java_android_serialport_SerialPort_open
-  (JNIEnv *, jclass, jstring, jint, jint);
+  (JNIEnv *, jobject, jstring, jint, jint, jint, jint, jint);
 
 /*
  * Class:     android_serialport_SerialPort
@@ -23,6 +23,17 @@ JNIEXPORT jobject JNICALL Java_android_serialport_SerialPort_open
 JNIEXPORT void JNICALL Java_android_serialport_SerialPort_close
   (JNIEnv *, jobject);
 
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class android_serialport_SerialPort_Builder */
+
+#ifndef _Included_android_serialport_SerialPort_Builder
+#define _Included_android_serialport_SerialPort_Builder
+#ifdef __cplusplus
+extern "C" {
+#endif
 #ifdef __cplusplus
 }
 #endif
