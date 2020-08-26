@@ -66,14 +66,14 @@ public final class SerialPort {
      *
      * @param device 串口设备文件
      * @param baudrate 波特率
-     * @param dataBits 数据位，默认8
-     * @param parity 奇偶校验位，默认0（无校验）
-     * @param stopBits 停止位，默认1
+     * @param dataBits 数据位；默认8,可选值为5~8
+     * @param parity 奇偶校验；0:无校验位(NONE，默认)；1:奇校验位(ODD);2:偶校验位(EVEN)
+     * @param stopBits 停止位；默认1；1:1位停止位；2:2位停止位
      * @param flags 默认0
      * @throws SecurityException
      * @throws IOException
      */
-    private SerialPort(File device, int baudrate, int dataBits, int parity, int stopBits, int flags)
+    public SerialPort(File device, int baudrate, int dataBits, int parity, int stopBits, int flags)
         throws SecurityException, IOException {
 
         /* Check access permission */
@@ -100,6 +100,34 @@ public final class SerialPort {
         }
         mFileInputStream = new FileInputStream(mFd);
         mFileOutputStream = new FileOutputStream(mFd);
+    }
+
+    /**
+     * 串口，默认的8n1
+     *
+     * @param device 串口设备文件
+     * @param baudrate 波特率
+     * @throws SecurityException
+     * @throws IOException
+     */
+    public SerialPort(File device, int baudrate) throws SecurityException, IOException {
+        this(device, baudrate, 8, 0, 1, 0);
+    }
+
+    /**
+     * 串口
+     *
+     * @param device 串口设备文件
+     * @param baudrate 波特率
+     * @param dataBits 数据位；默认8,可选值为5~8
+     * @param parity 奇偶校验；0:无校验位(NONE，默认)；1:奇校验位(ODD);2:偶校验位(EVEN)
+     * @param stopBits 停止位；默认1；1:1位停止位；2:2位停止位
+     * @throws SecurityException
+     * @throws IOException
+     */
+    public SerialPort(File device, int baudrate, int dataBits, int parity, int stopBits)
+        throws SecurityException, IOException {
+        this(device, baudrate, dataBits, parity, stopBits, 0);
     }
 
     // Getters and setters

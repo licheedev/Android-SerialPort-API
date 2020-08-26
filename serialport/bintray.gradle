@@ -1,0 +1,86 @@
+//在根build.gradle中加入
+//classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+//classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+
+//在module的build.gradle末位加入
+//apply from: './bintray.gradle'
+
+// 执行 ./gradlew clean bintrayUpload
+
+def toUpload = true // 配置是否上传
+if (toUpload) {
+    apply plugin: 'com.github.dcendents.android-maven'
+    apply plugin: 'com.jfrog.bintray'
+
+    // 定义参数
+    // 依赖信息
+    def groupIdDefined = "com.licheedev"
+    def artifactIdDefined = "android-serialport"
+    def versionDefined = rootProject.ext.versionName
+    // 其他信息
+    def siteUrl = "https://github.com/licheedev"
+    def gitUrl = "https://github.com/licheedev/Android-SerialPort-API.git"
+    def libName = "$artifactIdDefined"
+
+    // 待发布项目的groupId和version。android-maven-gradle-plugin插件需要这么配置。
+    group = "$groupIdDefined"
+    version = "$versionDefined"
+
+    // bintray平台信息配置
+    bintray {
+        user = BINTRAY_USER
+        key = BINTRAY_KEY
+
+        println "user=${user},key=${key}"
+
+        configurations = ['archives']
+        publish = true
+        pkg {
+            repo = "maven"
+            name = libName
+            licenses = [" Apache-2.0"]
+            websiteUrl = siteUrl
+            vcsUrl = gitUrl
+            version {
+                name = "$versionDefined"
+            }
+        }
+    }
+
+    // pom文件信息配置
+    install {
+        repositories.mavenInstaller {
+            pom.project {
+                groupId "$groupIdDefined"
+                artifactId "$artifactIdDefined"
+                version "$versionDefined"
+                packaging 'aar'
+            }
+        }
+    }
+
+    // 生成sourceJar和javaDocJar
+    task sourcesJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier = 'sources'
+    }
+
+    task javadoc(type: Javadoc) {
+        failOnError false
+        source = android.sourceSets.main.java.sourceFiles
+        options {
+            encoding = "utf-8"
+        }
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+        classpath += configurations.compile
+    }
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
+}

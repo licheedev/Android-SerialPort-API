@@ -7,10 +7,10 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode rootProject.ext.versionCode
+        versionCode 1
         versionName rootProject.ext.versionName
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         release {
@@ -34,5 +34,5 @@ dependencies {
 //    testCompile 'junit:junit:4.12'
 }
 
-apply from: '../jitpack.gradle'
+apply from: './bintray.gradle'
 

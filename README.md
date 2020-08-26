@@ -1,25 +1,12 @@
 # Android-SerialPort-API
 
-[![](https://jitpack.io/v/licheedev/Android-SerialPort-API.svg)](https://jitpack.io/#licheedev/Android-SerialPort-API)
-
 **Gradle 引用**
 
-1. 在根build.gradle中添加
-
-```
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-
-2. 子module添加依赖
+添加依赖
 
 ```
 dependencies {
-        implementation 'com.github.licheedev:Android-SerialPort-API:2.0.0'
+        implementation 'com.licheedev:android-serialport:2.1.1'
 }
 ```
 
@@ -39,7 +26,7 @@ SerialPort.setSuPath("/system/xbin/su");
 ```java
 
 // 默认8N1(8数据位、无校验位、1停止位)
-SerialPort serialPort = SerialPort.newBuilder(path, baudrate).build();
+SerialPort serialPort = new SerialPort(path, baudrate);
 
 // 7E2(7数据位、偶校验、2停止位)
 SerialPort serialPort = SerialPort //
