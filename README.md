@@ -6,7 +6,7 @@
 
 ```
 dependencies {
-        implementation 'com.licheedev:android-serialport:2.1.1'
+        implementation 'com.licheedev:android-serialport:2.1.2'
 }
 ```
 

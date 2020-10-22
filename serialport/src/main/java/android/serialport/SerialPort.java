@@ -17,6 +17,8 @@
 package android.serialport;
 
 import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -32,13 +34,19 @@ public final class SerialPort {
     public static final String DEFAULT_SU_PATH = "/system/bin/su";
 
     private static String sSuPath = DEFAULT_SU_PATH;
+    private File device;
+    private int baudrate;
+    private int dataBits;
+    private int parity;
+    private int stopBits;
+    private int flags;
 
     /**
      * Set the su binary path, the default su binary path is {@link #DEFAULT_SU_PATH}
      *
      * @param suPath su binary path
      */
-    public static void setSuPath(String suPath) {
+    public static void setSuPath(@Nullable String suPath) {
         if (suPath == null) {
             return;
         }
@@ -50,6 +58,7 @@ public final class SerialPort {
      *
      * @return
      */
+    @NonNull
     public static String getSuPath() {
         return sSuPath;
     }
@@ -73,8 +82,15 @@ public final class SerialPort {
      * @throws SecurityException
      * @throws IOException
      */
-    public SerialPort(File device, int baudrate, int dataBits, int parity, int stopBits, int flags)
-        throws SecurityException, IOException {
+    public SerialPort(@NonNull File device, int baudrate, int dataBits, int parity, int stopBits,
+        int flags) throws SecurityException, IOException {
+
+        this.device = device;
+        this.baudrate = baudrate;
+        this.dataBits = dataBits;
+        this.parity = parity;
+        this.stopBits = stopBits;
+        this.flags = flags;
 
         /* Check access permission */
         if (!device.canRead() || !device.canWrite()) {
@@ -110,7 +126,7 @@ public final class SerialPort {
      * @throws SecurityException
      * @throws IOException
      */
-    public SerialPort(File device, int baudrate) throws SecurityException, IOException {
+    public SerialPort(@NonNull File device, int baudrate) throws SecurityException, IOException {
         this(device, baudrate, 8, 0, 1, 0);
     }
 
@@ -125,18 +141,50 @@ public final class SerialPort {
      * @throws SecurityException
      * @throws IOException
      */
-    public SerialPort(File device, int baudrate, int dataBits, int parity, int stopBits)
+    public SerialPort(@NonNull File device, int baudrate, int dataBits, int parity, int stopBits)
         throws SecurityException, IOException {
         this(device, baudrate, dataBits, parity, stopBits, 0);
     }
 
     // Getters and setters
+    @NonNull
     public InputStream getInputStream() {
         return mFileInputStream;
     }
 
+    @NonNull
     public OutputStream getOutputStream() {
         return mFileOutputStream;
+    }
+
+    /** 串口设备文件 */
+    @NonNull
+    public File getDevice() {
+        return device;
+    }
+
+    /** 波特率 */
+    public int getBaudrate() {
+        return baudrate;
+    }
+
+    /** 数据位；默认8,可选值为5~8 */
+    public int getDataBits() {
+        return dataBits;
+    }
+
+    /** 奇偶校验；0:无校验位(NONE，默认)；1:奇校验位(ODD);2:偶校验位(EVEN) */
+    public int getParity() {
+        return parity;
+    }
+
+    /** 停止位；默认1；1:1位停止位；2:2位停止位 */
+    public int getStopBits() {
+        return stopBits;
+    }
+
+    public int getFlags() {
+        return flags;
     }
 
     // JNI
@@ -144,6 +192,27 @@ public final class SerialPort {
         int stopBits, int flags);
 
     public native void close();
+
+    /** 关闭流和串口，已经try-catch */
+    public void tryClose() {
+        try {
+            mFileInputStream.close();
+        } catch (IOException e) {
+            //e.printStackTrace();
+        }
+
+        try {
+            mFileOutputStream.close();
+        } catch (IOException e) {
+            //e.printStackTrace();
+        }
+
+        try {
+            close();
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+    }
 
     static {
         System.loadLibrary("serial_port");
