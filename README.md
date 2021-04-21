@@ -1,11 +1,13 @@
 # Android-SerialPort-API
 Fork自Google开源的Android串口通信Demo，修改成Android Studio项目 
+
 This lib is a fork of the Android serial port communication Demo open sourced by Google.
 
 ## Installation & Usage
 **Gradle**
 
 添加依赖:
+
 Add the dependency:
 
 ```
@@ -15,6 +17,7 @@ dependencies {
 ```
 
 **Import**
+
 ```java
 import android.serialport.SerialPort;
 ```
@@ -62,6 +65,7 @@ serialPort.tryClose();
 ```
 
 实现方式参考
+
 Implementation reference
-> Check (sample project)[https://github.com/licheedev/Android-SerialPort-API/tree/master/sample]
-> https://juejin.im/post/5c010a19e51d456ac27b40fc
+1. Check [sample project](https://github.com/licheedev/Android-SerialPort-API/tree/master/sample)
+2. https://juejin.im/post/5c010a19e51d456ac27b40fc
