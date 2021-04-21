@@ -1,7 +1,7 @@
 # Android-SerialPort-API
-Fork自Google开源的Android串口通信Demo，修改成Android Studio项目 
+(Fork)[https://code.google.com/archive/p/android-serialport-api/]自Google开源的Android串口通信Demo，修改成Android Studio项目 
 
-This lib is a fork of the Android serial port communication Demo open sourced by Google.
+This lib is a (fork)[https://code.google.com/archive/p/android-serialport-api/] of the Android serial port communication Demo open sourced by Google.
 
 ## Installation & Usage
 **Gradle**
