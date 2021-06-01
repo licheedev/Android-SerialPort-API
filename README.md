@@ -11,8 +11,16 @@ This lib is a [fork](https://code.google.com/archive/p/android-serialport-api/) 
 Add the dependency:
 
 ```
+allprojects {
+    repositories {
+        ...
+        jcenter()
+        mavenCentral() // since 2.1.3
+    }
+}
+
 dependencies {
-        implementation 'com.licheedev:android-serialport:2.1.2'
+        implementation 'com.licheedev:android-serialport:2.1.3'
 }
 ```
 

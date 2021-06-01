@@ -37,5 +37,5 @@ dependencies {
     api "androidx.annotation:annotation:1.1.0"
 }
 
-apply from: './bintray.gradle'
+apply from: '../maven_publish.gradle'
 
