@@ -42,12 +42,12 @@ public final class SerialPort {
     public static final String DEFAULT_SU_PATH = "/system/bin/su";
 
     private static String sSuPath = DEFAULT_SU_PATH;
-    private final File device;
-    private final int baudrate;
-    private final int dataBits;
-    private final int parity;
-    private final int stopBits;
-    private final int flags;
+    private File device;
+    private int baudrate;
+    private int dataBits;
+    private int parity;
+    private int stopBits;
+    private int flags;
 
     /**
      * Set the su binary path, the default su binary path is {@link #DEFAULT_SU_PATH}
@@ -198,6 +198,7 @@ public final class SerialPort {
     /** Change parity */
     public void changeParity(File device, int parity){
         setParity(device.getAbsolutePath(), parity);
+        this.parity = parity;
     }
 
     // JNI
