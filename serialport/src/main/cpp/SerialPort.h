@@ -17,6 +17,14 @@ JNIEXPORT jobject JNICALL Java_android_serialport_SerialPort_open
 
 /*
  * Class:     android_serialport_SerialPort
+ * Method:    setParity
+ * Signature: (Ljava/lang/String;I)Ljava/io/FileDescriptor;
+ */
+JNIEXPORT void JNICALL
+Java_android_serialport_SerialPort_setParity(JNIEnv *, jobject, jstring, jint);
+
+/*
+ * Class:     android_serialport_SerialPort
  * Method:    close
  * Signature: ()V
  */
