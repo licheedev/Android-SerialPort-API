@@ -20,7 +20,7 @@ allprojects {
 }
 
 dependencies {
-        implementation 'com.licheedev:android-serialport:2.1.3'
+        implementation 'com.licheedev:android-serialport:2.1.4'
 }
 ```
 
