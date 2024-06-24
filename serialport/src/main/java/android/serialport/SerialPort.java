@@ -27,7 +27,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+
+
 public final class SerialPort {
+
+    public static final int Parity_None = 0;
+    public static final int Parity_Odd  = 1;
+    public static final int Parity_Even = 2;
+    public static final int Parity_Space= 3;
+    public static final int Parity_Mark = 4;
 
     private static final String TAG = "SerialPort";
 
@@ -66,9 +74,9 @@ public final class SerialPort {
     /*
      * Do not remove or rename the field mFd: it is used by native method close();
      */
-    private FileDescriptor mFd;
-    private FileInputStream mFileInputStream;
-    private FileOutputStream mFileOutputStream;
+    private final FileDescriptor mFd;
+    private final FileInputStream mFileInputStream;
+    private final FileOutputStream mFileOutputStream;
 
     /**
      * 串口
@@ -195,11 +203,20 @@ public final class SerialPort {
         return flags;
     }
 
+    /** Change parity */
+    public void changeParity(File device, int parity){
+        setParity(device.getAbsolutePath(), parity);
+        this.parity = parity;
+    }
+
     // JNI
     private native FileDescriptor open(
         String absolutePath, int baudrate, int dataBits, int parity,
         int stopBits, int flags
     );
+
+    // JNI
+    private native void setParity(String absolutePath, int parity);
 
     public native void close();
 
@@ -238,8 +255,8 @@ public final class SerialPort {
 
     public final static class Builder {
 
-        private File device;
-        private int baudrate;
+        private final File device;
+        private final int baudrate;
         private int dataBits = 8;
         private int parity = 0;
         private int stopBits = 1;

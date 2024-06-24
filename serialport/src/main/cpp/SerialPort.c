@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-#include <termios.h>
+//#include <termios.h>
+#include <asm/termios.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -31,74 +32,6 @@ static const char *TAG = "serial_port";
 #define LOGD(fmt, args...) __android_log_print(ANDROID_LOG_DEBUG, TAG, fmt, ##args)
 #define LOGE(fmt, args...) __android_log_print(ANDROID_LOG_ERROR, TAG, fmt, ##args)
 
-static speed_t getBaudrate(jint baudrate) {
-    switch (baudrate) {
-        case 0:
-            return B0;
-        case 50:
-            return B50;
-        case 75:
-            return B75;
-        case 110:
-            return B110;
-        case 134:
-            return B134;
-        case 150:
-            return B150;
-        case 200:
-            return B200;
-        case 300:
-            return B300;
-        case 600:
-            return B600;
-        case 1200:
-            return B1200;
-        case 1800:
-            return B1800;
-        case 2400:
-            return B2400;
-        case 4800:
-            return B4800;
-        case 9600:
-            return B9600;
-        case 19200:
-            return B19200;
-        case 38400:
-            return B38400;
-        case 57600:
-            return B57600;
-        case 115200:
-            return B115200;
-        case 230400:
-            return B230400;
-        case 460800:
-            return B460800;
-        case 500000:
-            return B500000;
-        case 576000:
-            return B576000;
-        case 921600:
-            return B921600;
-        case 1000000:
-            return B1000000;
-        case 1152000:
-            return B1152000;
-        case 1500000:
-            return B1500000;
-        case 2000000:
-            return B2000000;
-        case 2500000:
-            return B2500000;
-        case 3000000:
-            return B3000000;
-        case 3500000:
-            return B3500000;
-        case 4000000:
-            return B4000000;
-        default:
-            return -1;
-    }
-}
 
 /*
  * Class:     android_serialport_SerialPort
@@ -114,15 +47,6 @@ JNIEXPORT jobject JNICALL Java_android_serialport_SerialPort_open
     speed_t speed;
     jobject mFileDescriptor;
 
-    /* Check arguments */
-    {
-        speed = getBaudrate(baudrate);
-        if (speed == -1) {
-            /* TODO: throw an exception */
-            LOGE("Invalid baudrate");
-            return NULL;
-        }
-    }
 
     /* Opening device */
     {
@@ -142,33 +66,31 @@ JNIEXPORT jobject JNICALL Java_android_serialport_SerialPort_open
 
     /* Configure device */
     {
-        struct termios cfg;
-        LOGD("Configuring serial port");
-        if (tcgetattr(fd, &cfg)) {
-            LOGE("tcgetattr() failed");
-            close(fd);
-            /* TODO: throw an exception */
-            return NULL;
-        }
+        struct termios2 cfg;
 
-        cfmakeraw(&cfg);
-        cfsetispeed(&cfg, speed);
-        cfsetospeed(&cfg, speed);
 
+        ioctl (fd, TCGETS2, &cfg);
+
+        //  SET BAUDRATE
+        cfg.c_cflag &= ~CBAUD;
+        cfg.c_cflag |= BOTHER;
+
+        cfg.c_ispeed = baudrate;
+        cfg.c_ospeed = baudrate;
 
         cfg.c_cflag &= ~CSIZE;
         switch (dataBits) {
             case 5:
-                cfg.c_cflag |= CS5;    //使用5位数据位
+                cfg.c_cflag |= CS5;
                 break;
             case 6:
-                cfg.c_cflag |= CS6;    //使用6位数据位
+                cfg.c_cflag |= CS6;
                 break;
             case 7:
-                cfg.c_cflag |= CS7;    //使用7位数据位
+                cfg.c_cflag |= CS7;
                 break;
             case 8:
-                cfg.c_cflag |= CS8;    //使用8位数据位
+                cfg.c_cflag |= CS8;
                 break;
             default:
                 cfg.c_cflag |= CS8;
@@ -177,16 +99,39 @@ JNIEXPORT jobject JNICALL Java_android_serialport_SerialPort_open
 
         switch (parity) {
             case 0:
-                cfg.c_cflag &= ~PARENB;    //无奇偶校验
+                //  PARITY OFF
+                cfg.c_cflag &= ~PARENB;
                 break;
             case 1:
-                cfg.c_cflag |= (PARODD | PARENB);   //奇校验
+                //  PARITY ODD
+                cfg.c_cflag |= (PARODD | PARENB);
+                cfg.c_iflag &= ~IGNPAR;
+                cfg.c_iflag |= PARMRK;
+                cfg.c_iflag |= INPCK;
                 break;
             case 2:
-                cfg.c_iflag &= ~(IGNPAR | PARMRK); // 偶校验
+                //  PARITY EVEN
+                cfg.c_iflag &= ~(IGNPAR | PARMRK);
                 cfg.c_iflag |= INPCK;
                 cfg.c_cflag |= PARENB;
                 cfg.c_cflag &= ~PARODD;
+                break;
+            case 3:
+                //  PARITY SPACE
+                cfg.c_iflag &= ~IGNPAR;             //  Make sure wrong parity is not ignored
+                cfg.c_iflag |= PARMRK;              //  Marks parity error, parity error
+                                                    //  is given as three char sequence
+                cfg.c_iflag |= INPCK;               //  Enable input parity checking
+                cfg.c_cflag |= PARENB | CMSPAR;     //  Enable parity and set space parity
+                cfg.c_cflag &= ~PARODD;             //
+                break;
+            case 4:
+                //  PARITY MARK
+                cfg.c_iflag &= ~IGNPAR;             //  Make sure wrong parity is not ignored
+                cfg.c_iflag |= PARMRK;              //  Marks parity error, parity error
+                                                    //  is given as three char sequence
+                cfg.c_iflag |= INPCK;               //  Enable input parity checking
+                cfg.c_cflag |= PARENB | CMSPAR | PARODD;
                 break;
             default:
                 cfg.c_cflag &= ~PARENB;
@@ -205,11 +150,11 @@ JNIEXPORT jobject JNICALL Java_android_serialport_SerialPort_open
                 break;
         }
 
-        if (tcsetattr(fd, TCSANOW, &cfg)) {
-            LOGE("tcsetattr() failed");
+        if(ioctl (fd, TCSETS2, &cfg)){
+            LOGE("tcsets2 failed");
             close(fd);
-            /* TODO: throw an exception */
             return NULL;
+            /* TODO: throw an exception */
         }
     }
 
@@ -245,3 +190,77 @@ JNIEXPORT void JNICALL Java_android_serialport_SerialPort_close
     close(descriptor);
 }
 
+
+JNIEXPORT void JNICALL
+Java_android_serialport_SerialPort_setParity(JNIEnv *env, jobject thiz, jstring absolute_path,
+                                             jint parity) {
+    int flags = 0;
+    int fd;
+
+    /* Opening device */
+    {
+        jboolean iscopy;
+        const char *path_utf = (*env)->GetStringUTFChars(env, absolute_path, &iscopy);
+        LOGD("Opening serial port %s with flags 0x%x", path_utf, O_RDWR | flags);
+        fd = open(path_utf, O_RDWR | flags);
+        LOGD("open() fd = %d", fd);
+        (*env)->ReleaseStringUTFChars(env, absolute_path, path_utf);
+        if (fd == -1) {
+            /* Throw an exception */
+            LOGE("Cannot get serial port!");
+            return;
+            /* TODO: throw an exception */
+        }
+    }
+
+    /* Configure device */
+    {
+        struct termios2 cfg;
+        ioctl(fd, TCGETS2, &cfg);
+        switch (parity) {
+            case 0:
+                //  PARITY OFF
+                cfg.c_cflag &= ~PARENB;
+                break;
+            case 1:
+                //  PARITY ODD
+                cfg.c_cflag |= (PARODD | PARENB);
+                cfg.c_iflag &= ~IGNPAR;
+                cfg.c_iflag |= PARMRK;
+                cfg.c_iflag |= INPCK;
+                break;
+            case 2:
+                //  PARITY EVEN
+                cfg.c_iflag &= ~(IGNPAR | PARMRK);
+                cfg.c_iflag |= INPCK;
+                cfg.c_cflag |= PARENB;
+                cfg.c_cflag &= ~PARODD;
+                break;
+            case 3:
+                //  PARITY SPACE
+                cfg.c_iflag &= ~IGNPAR;             //  Make sure wrong parity is not ignored
+                cfg.c_iflag |= PARMRK;              //  Marks parity error, parity error
+                //  is given as three char sequence
+                cfg.c_iflag |= INPCK;               //  Enable input parity checking
+                cfg.c_cflag |= PARENB | CMSPAR;     //  Enable parity and set space parity
+                cfg.c_cflag &= ~PARODD;             //
+                break;
+            case 4:
+                //  PARITY MARK
+                cfg.c_iflag &= ~IGNPAR;             //  Make sure wrong parity is not ignored
+                cfg.c_iflag |= PARMRK;              //  Marks parity error, parity error
+                //  is given as three char sequence
+                cfg.c_iflag |= INPCK;               //  Enable input parity checking
+                cfg.c_cflag |= PARENB | CMSPAR | PARODD;
+                break;
+            default:
+                cfg.c_cflag &= ~PARENB;
+                break;
+        }
+        if(ioctl (fd, TCSETS2, &cfg)){
+            LOGE("tcsets2 failed, parity not updated!");
+            return;
+            /* TODO: throw an exception */
+        }
+    }
+}
