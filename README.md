@@ -20,7 +20,10 @@ allprojects {
 }
 
 dependencies {
+        // 传统4KB内存页面版本
         implementation 'com.licheedev:android-serialport:2.1.4'
+        // 适配16KB页面版本，https://developer.android.google.cn/guide/practices/page-sizes?hl=zh-cn
+        implementation 'com.licheedev:android-serialport:2.1.5'
 }
 ```
 
